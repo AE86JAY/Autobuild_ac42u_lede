@@ -88,7 +88,7 @@ Firmware_Diy_Start() {
 	fi
 	case "${TARGET_BOARD}" in
 	*)
-		AutoBuild_Fw="AutoBuild-${OP_REPO}-${TARGET_PROFILE}-${OP_VERSION}-${TARGET_FLAG}-SHA256.FORMAT"
+		AutoBuild_Fw="${TARGET_PROFILE}-${OP_VERSION}-${TARGET_FLAG}-SHA256.FORMAT"
 	;;
 	esac
 	cat >> ${GITHUB_ENV} <<EOF
@@ -349,10 +349,10 @@ Firmware_Diy_End() {
 		fi
 	;;
 	esac
-	if [[ $(ls) =~ 'AutoBuild-' ]]
+	if [[ $(ls) =~ '${TARGET_PROFILE}' ]]
 	then
 		cd -
-		mv -f ${Fw_Path}/AutoBuild-* bin/Firmware
+		mv -f ${Fw_Path}/*${TARGET_PROFILE}* bin/Firmware
 	fi
 	ECHO "[Firmware_Diy_End] Done"
 }
