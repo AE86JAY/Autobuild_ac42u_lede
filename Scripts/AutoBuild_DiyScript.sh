@@ -7,12 +7,12 @@ Firmware_Diy_Core() {
 	# 请在该函数内按需修改变量设置, 使用 case 语句控制不同预设变量的设置
 	
 	# 可用预设变量
-	# ${OP_AUTHOR}			OpenWrt 源码作者
-	# ${OP_REPO}			OpenWrt 仓库名称
-	# ${OP_BRANCH}			OpenWrt 源码分支
+	# ${OP_AUTHOR}  			OpenWrt 源码作者
+	# ${OP_REPO}    			OpenWrt 仓库名称
+	# ${OP_BRANCH}  			OpenWrt 源码分支
 	# ${CONFIG_FILE}		配置文件
 	
-	Author=AUTO
+	Author=黑夜里的光
 	# 作者名称, AUTO: [自动识别]
 	
 	Author_URL=AUTO
@@ -21,10 +21,10 @@ Firmware_Diy_Core() {
 	Default_Flag=AUTO
 	# 固件标签 (名称后缀), 适用不同配置文件, AUTO: [自动识别]
 	
-	Default_IP="192.168.1.1"
+	Default_IP="192.168.50.1"
 	# 固件 IP 地址
 	
-	Default_Title="Powered by AutoBuild-Actions"
+	Default_Title="Powered by 黑夜里的光"
 	# 固件终端首页显示的额外信息
 	
 	Short_Fw_Date=true
