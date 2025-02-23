@@ -349,10 +349,10 @@ Firmware_Diy_End() {
 		fi
 	;;
 	esac
-	if [[ $(ls) =~ '${TARGET_PROFILE}' ]]
+	if [[ $(ls) =~ $AutoBuild_Fw ]]
 	then
 		cd -
-		mv -f ${Fw_Path}/*${TARGET_PROFILE}* bin/Firmware
+		mv -f ${Fw_Path}/$AutoBuild_Fw* bin/Firmware
 	fi
 	ECHO "[Firmware_Diy_End] Done"
 }

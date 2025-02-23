@@ -235,7 +235,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: openwrt/bin/Firmware/*
         file_glob: true
-        tag: lede
+        tag: ${TARGET_FLAG}
         overwrite: true
         
     - name: Download Github API
@@ -250,7 +250,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./API
         file_glob: true
-        tag: lede
+        tag: ${TARGET_FLAG}
         overwrite: true
 
     - name: Delete old Workflow Runs
