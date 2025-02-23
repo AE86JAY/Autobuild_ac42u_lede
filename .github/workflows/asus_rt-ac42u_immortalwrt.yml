@@ -241,7 +241,7 @@ jobs:
     - name: Download Github API
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
       run: |
-        wget https://api.github.com/repos/${{github.repository}}/releases/tags/immortalwrt -O API
+        wget https://api.github.com/repos/${{github.repository}}/releases/tags/immortalwrt -O API-im
         
     - name: Upload Github API to Release
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
