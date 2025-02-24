@@ -233,7 +233,7 @@ jobs:
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: openwrt/bin/Firmware/*
+        file: ${{ github.workspace }}/openwrt/bin/Firmware/*
         file_glob: true
         tag: lede
         overwrite: true
