@@ -33,11 +33,20 @@ jobs:
         wget https://api.github.com/repos/${{github.repository}}/releases/tags/lede -O API-lede
         wget https://api.github.com/repos/${{github.repository}}/releases/tags/immortalwrt -O API-im
         
-    - name: Upload API to Github Release
+    - name: Upload API-lede to Github Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ./API-lede | ./API-im
+        file: ./API-lede
         file_glob: true
-        tag: lede | immortalwrt
+        tag: lede
+        overwrite: true
+ 
+    - name: Upload API-im to Github Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: .API- immortalwrt
+        file_glob: true
+        tag: immortalwrt
         overwrite: true
