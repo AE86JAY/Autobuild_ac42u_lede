@@ -75,7 +75,7 @@ Firmware_Diy_Start() {
 	if [[ ${Default_Flag} == AUTO ]]
 	then
 		TARGET_FLAG=${CONFIG_FILE/${TARGET_PROFILE}-/}
-		[[ ${TARGET_FLAG} =~ ${TARGET_PROFILE} || -z ${TARGET_FLAG} || ${TARGET_FLAG} == ${CONFIG_FILE} ]] && TARGET_FLAG=full
+		[[ ${TARGET_FLAG} =~ ${TARGET_PROFILE} || -z ${TARGET_FLAG} || ${TARGET_FLAG} == ${CONFIG_FILE} ]] && TARGET_FLAG=${OP_REPO}
 	else
 		if [[ ! ${Default_Flag} =~ (\"|=|-|_|\.|\#|\|) && ${Default_Flag} =~ [a-zA-Z0-9] ]]
 		then
