@@ -30,13 +30,14 @@ jobs:
 
     - name: Download Github Release API
       run: |
-        wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
+        wget https://api.github.com/repos/${{github.repository}}/releases/tags/lede -O API-lede
+        wget https://api.github.com/repos/${{github.repository}}/releases/tags/immortalwrt -O API-im
         
     - name: Upload API to Github Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ./API
+        file: ./API-lede | ./API-im
         file_glob: true
         tag: AutoUpdate
         overwrite: true
