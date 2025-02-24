@@ -349,10 +349,10 @@ Firmware_Diy_End() {
 		fi
 	;;
 	esac
-	if [[ $(ls) =~ '$AutoBuild_Fw' ]]
+	if [[ $(ls) =~ '${AutoBuild_Fw}' ]]
 	then
 		cd -
-		mv -f ${Fw_Path}/$AutoBuild_Fw* bin/Firmware
+		mv -f ${Fw_Path}/${AutoBuild_Fw} bin/Firmware
 	fi
 	ECHO "[Firmware_Diy_End] Done"
 }
@@ -536,7 +536,7 @@ ReleaseDL() {
 	FILE_NAME=$2
 	TARGET_FILE_PATH=$3
 	TARGET_FILE_RENAME=$4
-	API_FILE=/tmp/API.json
+	API_FILE=/tmp/API*.json
 	
 	if [[ ! -d ${TARGET_FILE_PATH} ]]
 	then
@@ -560,7 +560,7 @@ ReleaseDL() {
 			then
 				# echo $browser_download_url
 				[[ ${TARGET_FILE_RENAME} ]] && _FILE=${TARGET_FILE_RENAME} || _FILE=${FILE_NAME}
-    				ECHO "Downloading link ${browser_download_url} ..."
+				ECHO "Downloading link ${browser_download_url} ..."
 				wget --quiet --no-check-certificate \
 					--tries 5 --timeout 20 \
 					${browser_download_url} \
