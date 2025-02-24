@@ -349,7 +349,7 @@ Firmware_Diy_End() {
 		fi
 	;;
 	esac
-	if [[ $(ls) =~ $AutoBuild_Fw ]]
+	if [[ $(ls) =~ '$AutoBuild_Fw' ]]
 	then
 		cd -
 		mv -f ${Fw_Path}/$AutoBuild_Fw* bin/Firmware
