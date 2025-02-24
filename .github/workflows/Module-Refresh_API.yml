@@ -39,5 +39,5 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./API-lede | ./API-im
         file_glob: true
-        tag: AutoUpdate
+        tag: lede | immortalwrt
         overwrite: true
