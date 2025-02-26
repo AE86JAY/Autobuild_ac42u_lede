@@ -4,7 +4,7 @@
 #   Author: Hyy2001X                                      #
 ###########################################################
 
-name: ASUS RT-ACRH17 (LEDE)
+name: ASUS RT-ACRH17 (lede)
 
 ### 界面控制部分 ( 以下内容请保持不变 )
 on:
@@ -32,14 +32,14 @@ on:
   #  - cron: 0 8 * * 5
   
   ## 重新点亮 Star 时触发编译(不要删除此行注释)
-  watch:
-    types: [started]
+  #watch:
+  #  types: [started]
 
 ### 请按需求修改以下内容
 ### 环境变量设置
 env:
 # 编译时调用的 [.config] 文件名称
-  CONFIG_FILE: asus_rt-ac42u_lede
+  CONFIG_FILE: asus_rt-ac42u
 # 源码仓库:分支
   DEFAULT_SOURCE: coolsnowwolf/lede:master
 # 上传固件到 Github Releases
@@ -59,7 +59,7 @@ env:
 
 jobs:
   Compile:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
@@ -93,7 +93,7 @@ jobs:
       uses: easimon/maximize-build-space@master
       with: 
         root-reserve-mb: 5120
-        swap-size-mb: 512
+        swap-size-mb: 1
         remove-dotnet: 'true'
         remove-android: 'true'
         remove-haskell: 'true'
@@ -168,7 +168,7 @@ jobs:
       if: env.CACHE_ACCELERATE == 'true'
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: false
+        ccache: true
         toolchain: true
         skip: true
         clean: true
@@ -204,7 +204,7 @@ jobs:
     - name: Build OpenWrt
       run: |
         cd openwrt
-        make -j4 || make -j1 V=s
+        make -j8 || make -j1 V=s
         [ "$?" == 0 ] && echo "Compile_Result=true" >> $GITHUB_ENV || echo "Compile_Result=false" >> $GITHUB_ENV
 
     - name: Checkout Firmware
@@ -235,13 +235,13 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: openwrt/bin/Firmware/*
         file_glob: true
-        tag: lede
+        tag: AutoUdate
         overwrite: true
         
     - name: Download Github API
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
       run: |
-        wget https://api.github.com/repos/${{github.repository}}/releases/tags/lede -O API-lede
+        wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUdate -O API
         
     - name: Upload Github API to Release
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
@@ -250,7 +250,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./API
         file_glob: true
-        tag: lede
+        tag: AutoUdate
         overwrite: true
 
     - name: Delete old Workflow Runs
