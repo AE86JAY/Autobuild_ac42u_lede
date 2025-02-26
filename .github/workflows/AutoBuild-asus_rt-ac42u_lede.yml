@@ -235,13 +235,13 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: openwrt/bin/Firmware/*
         file_glob: true
-        tag: AutoUdate
+        tag: AutoUpdate
         overwrite: true
         
     - name: Download Github API
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
       run: |
-        wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUdate -O API
+        wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
         
     - name: Upload Github API to Release
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
@@ -250,7 +250,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./API
         file_glob: true
-        tag: AutoUdate
+        tag: AutoUpdate
         overwrite: true
 
     - name: Delete old Workflow Runs
