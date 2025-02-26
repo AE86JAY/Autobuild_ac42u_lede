@@ -75,7 +75,7 @@ Firmware_Diy_Start() {
 	if [[ ${Default_Flag} == AUTO ]]
 	then
 		TARGET_FLAG=${CONFIG_FILE/${TARGET_PROFILE}-/}
-		[[ ${TARGET_FLAG} =~ ${TARGET_PROFILE} || -z ${TARGET_FLAG} || ${TARGET_FLAG} == ${CONFIG_FILE} ]] && TARGET_FLAG=full
+		[[ ${TARGET_FLAG} =~ ${TARGET_PROFILE} || -z ${TARGET_FLAG} || ${TARGET_FLAG} == ${CONFIG_FILE} ]] && TARGET_FLAG=Full
 	else
 		if [[ ! ${Default_Flag} =~ (\"|=|-|_|\.|\#|\|) && ${Default_Flag} =~ [a-zA-Z0-9] ]]
 		then
@@ -88,7 +88,7 @@ Firmware_Diy_Start() {
 	fi
 	case "${TARGET_BOARD}" in
 	*)
-		AutoBuild_Fw="AutoBuild-${TARGET_PROFILE}-${OP_VERSION}-${TARGET_FLAG}-SHA256.FORMAT"
+		AutoBuild_Fw="AutoBuild-${OP_REPO}-${TARGET_PROFILE}-${OP_VERSION}-${TARGET_FLAG}-SHA256.FORMAT"
 	;;
 	esac
 	cat >> ${GITHUB_ENV} <<EOF
@@ -536,7 +536,7 @@ ReleaseDL() {
 	FILE_NAME=$2
 	TARGET_FILE_PATH=$3
 	TARGET_FILE_RENAME=$4
-	API_FILE=/tmp/API*.json
+	API_FILE=/tmp/API.json
 	
 	if [[ ! -d ${TARGET_FILE_PATH} ]]
 	then
@@ -560,7 +560,7 @@ ReleaseDL() {
 			then
 				# echo $browser_download_url
 				[[ ${TARGET_FILE_RENAME} ]] && _FILE=${TARGET_FILE_RENAME} || _FILE=${FILE_NAME}
-				ECHO "Downloading link ${browser_download_url} ..."
+    				ECHO "Downloading link ${browser_download_url} ..."
 				wget --quiet --no-check-certificate \
 					--tries 5 --timeout 20 \
 					${browser_download_url} \
