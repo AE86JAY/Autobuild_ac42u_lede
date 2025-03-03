@@ -277,7 +277,7 @@ jobs:
                 "isAtAll": false
             }
           }'
-        elif [[ "${{ env.Compile_Result }}" == "false" || ${{ cancelled() }} ]]; then
+        elif [[ "${{ env.Compile_Result }}" == "false" || cancelled() }} ]]; then
           MESSAGE='{
             "msgtype": "markdown",
             "markdown": {
