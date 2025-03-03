@@ -266,7 +266,7 @@ jobs:
       run: |
         TIMESTAMP=$(date +%s%3N)
         SIGN=$(printf "$TIMESTAMP\n$DT_SECRET" | openssl dgst -sha256 -hmac "$DT_SECRET" -binary | base64)
-        if [[ "${{ env.Compile_Result }}" == "true" && ! ${{ cancelled() }} ]]; then
+        if [[ "${{ env.Compile_Result == "true" && !cancelled() }} ]]; then
           MESSAGE='{
             "msgtype": "markdown",
             "markdown": {
@@ -277,7 +277,7 @@ jobs:
                 "isAtAll": false
             }
           }'
-        elif [[ "${{ env.Compile_Result }}" == "false" || cancelled() }} ]]; then
+        elif [[ "${{ env.Compile_Result == "false" || cancelled() }} ]]; then
           MESSAGE='{
             "msgtype": "markdown",
             "markdown": {
