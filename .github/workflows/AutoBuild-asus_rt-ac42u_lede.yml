@@ -259,3 +259,41 @@ jobs:
       with:
         retain_days: 1
         keep_minimum_runs: 2
+    - name: 钉钉通知
+      env:
+        DT_TOKEN: ${{ secrets.DINGTALK_ACCESS_TOKEN }}
+        DT_SECRET: ${{ secrets.DINGTALK_SECRET }}
+      run: |
+        TIMESTAMP=$(date +%s%3N)
+        SIGN=$(printf "$TIMESTAMP\n$DT_SECRET" | openssl dgst -sha256 -hmac "$DT_SECRET" -binary | base64)
+        if [[ "${{ env.Compile_Result }}" == "true" && ! ${{ cancelled() }} ]]; then
+          MESSAGE='{
+            "msgtype": "markdown",
+            "markdown": {
+                "title": "🎉 编译成功通知",
+                "text": "### ✅ RT-AC42U ImmortalWrt 编译成功，请尽情搞机吧！ \n\n**🕒 时间**: ${{ env.Display_Date }} \n**📦 仓库**: [${{ github.repository }}](https://github.com/${{ github.repository }}) \n**🔥 状态**: [查看构建详情](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n\n> 💡 固件已自动上传至 Releases"
+            },
+            "at": {
+                "isAtAll": false
+            }
+          }'
+        elif [[ "${{ env.Compile_Result }}" == "false" || ${{ cancelled() }} ]]; then
+          MESSAGE='{
+            "msgtype": "markdown",
+            "markdown": {
+                "title": "⚠️ 编译失败警报",
+                "text": "### ❌ RT-AC42U ImmortalWrt固件编译失败，工作流程已取消 \n\n**🕒 时间**: ${{ env.Display_Date }} \n**📦 仓库**: [${{ github.repository }}](https://github.com/${{ github.repository }}) \n**📎 日志**: [查看错误详情](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n\n> 🚨 请立即检查代码或配置文件！"
+            },
+            "at": {
+                "atMobiles": ["可选@的手机号"],
+                "isAtAll": false
+            }
+          }'
+        else
+          echo "未知状态，不发送通知"
+          exit 0
+        fi
+        curl -X POST \
+        "https://oapi.dingtalk.com/robot/send?access_token=$DT_TOKEN&timestamp=$TIMESTAMP&sign=$SIGN" \
+        -H 'Content-Type: application/json' \
+        -d "$MESSAGE"
