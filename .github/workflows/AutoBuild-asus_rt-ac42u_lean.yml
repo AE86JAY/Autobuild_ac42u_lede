@@ -4,7 +4,7 @@
 #   Author: Hyy2001X                                      #
 ###########################################################
 
-name: ASUS RT-ACRH17 (lede)
+name: ASUS RT-ACRH17 (lede版)
 
 ### 界面控制部分 ( 以下内容请保持不变 )
 on:
@@ -92,7 +92,7 @@ jobs:
       if: env.DELETE_USELESS_FILES == 'true' && !cancelled()
       uses: easimon/maximize-build-space@master
       with: 
-        root-reserve-mb: 5120
+        root-reserve-mb: 6000
         swap-size-mb: 1
         remove-dotnet: 'true'
         remove-android: 'true'
@@ -168,7 +168,7 @@ jobs:
       if: env.CACHE_ACCELERATE == 'true'
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: true
+        ccache: false
         toolchain: true
         skip: true
         clean: true
@@ -204,7 +204,7 @@ jobs:
     - name: Build OpenWrt
       run: |
         cd openwrt
-        make -j8 || make -j1 V=s
+        make -j4 || make -j1 V=s
         [ "$?" == 0 ] && echo "Compile_Result=true" >> $GITHUB_ENV || echo "Compile_Result=false" >> $GITHUB_ENV
 
     - name: Checkout Firmware
@@ -253,50 +253,56 @@ jobs:
         tag: AutoUpdate
         overwrite: true
 
-    - name: Delete old Workflow Runs
-      uses: GitRML/delete-workflow-runs@main
+    - name: Delete workflow runs
       if: env.DELETE_OLD_WORKFLOW == 'true' && !cancelled()
+      uses: Mattraks/delete-workflow-runs@v2
       with:
-        retain_days: 1
-        keep_minimum_runs: 2
+        token: ${{ github.token }}
+  #      repository: ${{ github.repository }}
+        retain_days: 30
+        keep_minimum_runs: 3   
         
-    - name: 钉钉通知
+    - name: Notify DingTalk (Success)
+      if: env.Compile_Result == 'true' && !cancelled()   
       env:
         DT_TOKEN: ${{ secrets.DINGTALK_ACCESS_TOKEN }}
         DT_SECRET: ${{ secrets.DINGTALK_SECRET }}
       run: |
         TIMESTAMP=$(date +%s%3N)
         SIGN=$(printf "$TIMESTAMP\n$DT_SECRET" | openssl dgst -sha256 -hmac "$DT_SECRET" -binary | base64)
-       if [[ "${{ env.Compile_Result == "true" &&   !cancelled() }}" ]];
-       then: 
-          MESSAGE='{
-            "msgtype": "markdown",
-            "markdown": {
-                "title": "🎉 编译成功通知",
-                "text": "### ✅ RT-AC42U Lean版 编译成功，请尽情搞机吧！ \n\n**🕒 时间**: ${{ env.Display_Date }} \n**📦 仓库**: [${{ github.repository }}](https://github.com/${{ github.repository }}) \n**🔥 状态**: [查看构建详情](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n\n> 💡 固件已自动上传至 Releases"
-            },
-            "at": {
-                "isAtAll": false
-            }
-          }'
-        elif [[ "${{ env.Compile_Result == "false" || cancelled() }}" ]];
-        then:
-          MESSAGE='{
-            "msgtype": "markdown",
-            "markdown": {
-                "title": "⚠️ 编译失败警报",
-                "text": "### ❌ RT-AC42U Lean版固件编译失败，工作流程已取消 \n\n**🕒 时间**: ${{ env.Display_Date }} \n**📦 仓库**: [${{ github.repository }}](https://github.com/${{ github.repository }}) \n**📎 日志**: [查看错误详情](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n\n> 🚨 请立即检查代码或配置文件！"
-            },
-            "at": {
-                "atMobiles": ["可选@的手机号"],
-                "isAtAll": false
-            }
-          }'
-        else
-          echo "未知状态，不发送通知"
-          exit 0
-        fi
         curl -X POST \
         "https://oapi.dingtalk.com/robot/send?access_token=$DT_TOKEN&timestamp=$TIMESTAMP&sign=$SIGN" \
         -H 'Content-Type: application/json' \
-        -d "$MESSAGE"
+        -d '{
+           "msgtype": "markdown",
+           "markdown": {
+               "title": "🎉 编译成功通知",
+               "text": "### ✅ RT-AC42U Ilede 编译成功 \n\n**🕒 时间**: ${{ env.Display_Date }} \n**📦 仓库**: [${{ github.repository }}](https://github.com/${{ github.repository }}) \n**🔥 状态**: [查看构建详情](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n\n> 💡 固件已自动上传至 Releases"
+           },
+           "at": {
+               "isAtAll": false
+           }
+         }'
+
+    - name: Notify DingTalk (Failed)
+      if: ${{ env.Compile_Result == 'false' || cancelled() }}     
+      env: 
+        DT_TOKEN: ${{ secrets.DINGTALK_ACCESS_TOKEN }}
+        DT_SECRET: ${{ secrets.DINGTALK_SECRET }}
+      run: |
+       TIMESTAMP=$(date +%s%3N)
+       SIGN=$(printf "$TIMESTAMP\n$DT_SECRET" | openssl dgst -sha256 -hmac "$DT_SECRET" -binary | base64)
+       curl -X POST \
+       "https://oapi.dingtalk.com/robot/send?access_token=$DT_TOKEN&timestamp=$TIMESTAMP&sign=$SIGN" \
+       -H 'Content-Type: application/json' \
+       -d '{
+          "msgtype": "markdown",
+          "markdown": {
+              "title": "⚠️ 编译失败警报",
+              "text": "### ❌ RT-AC42U Ilede 编译失败 \n\n**🕒 时间**: ${{ env.Display_Date }} \n**📦 仓库**: [${{ github.repository }}](https://github.com/${{ github.repository }}) \n**📎 日志**: [查看错误详情](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n\n> 🚨 请立即检查代码或配置文件！"
+           },
+           "at": {
+               "atMobiles": ["可选@的手机号"],
+               "isAtAll": false
+            }
+          }'
