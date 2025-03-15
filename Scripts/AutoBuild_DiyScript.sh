@@ -97,6 +97,15 @@ EOF
 		# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 		# sed -i '/uci commit luci/i\uci set luci.main.mediaurlbase="/luci-static/argon-mod"' $(PKG_Finder d package default-settings)/files/zzz-default-settings
 		#sed -i "s?openwrt-23.05?master?g" ${FEEDS_CONF}
+        WIFI_SCRIPT_PATH="package/kernel/mac80211/files/lib/wifi/mac80211.sh"
+        # 调试路径
+        echo "Checking file path: ${WORK}/${WIFI_SCRIPT_PATH}"
+        ls -l ${WORK}/${WIFI_SCRIPT_PATH} || exit 1
+        # 设置国家代码为 CN
+        sed -i "s|country=US|country=CN|g" ${WORK}/${WIFI_SCRIPT_PATH}
+        # 根据频段设置不同 SSID
+        sed -i "/band=2g'/{n;s/ssid=LEDE/ssid=CandyTime_C9A700_2.4G/}" ${WORK}/${WIFI_SCRIPT_PATH}
+        sed -i "/band=5g'/{n;s/ssid=LEDE/ssid=CandyTime_C9A700/}" ${WORK}/${WIFI_SCRIPT_PATH}
 		git reset --hard 1627fd2c745e496134834a8fb8145ba0aa458ae9
 		
 		rm -r ${FEEDS_LUCI}/luci-theme-argon*
@@ -223,4 +232,27 @@ EOF
 		# ReleaseDL https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest geoip.dat ${BASE_FILES}/usr/v2ray
 	;;
 	esac
+	Generate_Update_Logs() {
+    LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
+    # 获取 OpenWrt 版本
+    OPENWRT_VERSION=$(grep 'OPENWRT_VERSION=' ${WORK}/version | cut -d '=' -f2)
+    # 获取 LUCI 版本
+    LUCI_VERSION=$(grep 'LUCI_VERSION=' ${WORK}/feeds.conf.default | grep 'luci' | cut -d '=' -f2)
+    # 获取内核版本
+    LINUX_VERSION-=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
+    # 编译日期 (UTC+8)
+    BUILD_DATE=$(TZ=UTC-8 date +"%Y-%m-%d")
+    # 更新内容（从环境变量读取，需在 workflow 中定义）
+    UPDATE_CONTENT="${UPDATE_CONTENT:-默认更新描述}"
+
+    # 生成 JSON 文件
+    cat > ${LOG_PATH} <<EOF
+{
+    "OPENWRT版本": "${OPENWRT_VERSION}",
+    "LUCI版本": "${LUCI_VERSION}",
+    "内核版本": "${KERNEL_VERSION}",
+    "更新内容": "${UPDATE_CONTENT}",
+    "编译日期": "${BUILD_DATE}"
+}
+EOF
 }

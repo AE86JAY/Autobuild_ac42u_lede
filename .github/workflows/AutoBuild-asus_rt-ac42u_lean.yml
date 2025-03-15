@@ -20,6 +20,9 @@ on:
       Tempoary_FLAG:
         description: '固件标签 [可选]'
         default: ''
+      UPDATE_CONTENT:
+        description: '更新内容描述（支持 Markdown）'
+        default: '常规更新'
 ### 界面控制部分结束 ( 以上内容请保持不变 )
 
   ## Git Push 时触发编译(不要删除此行注释)
@@ -54,6 +57,8 @@ env:
   DELETE_OLD_WORKFLOW: true
 # Cache 加速编译
   CACHE_ACCELERATE: true
+# 时区
+  TZ: Asia/Shanghai
 ### 结束
 ### 请按需求修改以上内容
 
@@ -142,6 +147,10 @@ jobs:
         echo "REPO_BRANCH=$REPO_BRANCH" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Display_Date=$(date +%Y/%m/%d)" >> $GITHUB_ENV
+        if [ -n "${{ github.event.inputs.UPDATE_CONTENT }}" ]
+        then
+            echo "UPDATE_CONTENT=${{ github.event.inputs.UPDATE_CONTENT }}" >> $GITHUB_ENV
+        fi
 
     - name: Initialize Environment
       env:
@@ -205,7 +214,10 @@ jobs:
       run: |
         cd openwrt
         make -j4 || make -j1 V=s
-        [ "$?" == 0 ] && echo "Compile_Result=true" >> $GITHUB_ENV || echo "Compile_Result=false" >> $GITHUB_ENV
+        [ "$?" == 0 ] && echo "Compile_Result=true" 
+        source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
+        Generate_Update_Logs
+        >> $GITHUB_ENV || echo "Compile_Result=false" >> $GITHUB_ENV
 
     - name: Checkout Firmware
       if: env.Compile_Result == 'true' && !cancelled()
@@ -233,7 +245,9 @@ jobs:
       if: env.UPLOAD_RELEASES == 'true' && env.Compile_Result == 'true' && !cancelled()
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: openwrt/bin/Firmware/*
+        file: |
+          openwrt/bin/Firmware/*
+          openwrt/bin/Firmware/Update_Logs.json
         file_glob: true
         tag: AutoUpdate
         overwrite: true
