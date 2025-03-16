@@ -233,6 +233,8 @@ EOF
 		# ReleaseDL https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest geoip.dat ${BASE_FILES}/usr/v2ray
 	;;
 	esac
+}
+
 Generate_Update_Logs() {
     LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
     # 获取 OpenWrt 版本
@@ -243,7 +245,7 @@ Generate_Update_Logs() {
     LINUX_VERSION=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
     # 编译日期 (UTC+8)
     BUILD_DATE=$(TZ=UTC-8 date +"%Y-%m-%d")
-    # 更新内容（从环境变量读取，需在 workflow 中定义）
+    # 更新内容（从环境变量读取）
     UPDATE_CONTENT="${UPDATE_CONTENT:-默认更新描述}"
 
     # 生成 JSON 文件（修正格式）
