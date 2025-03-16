@@ -232,7 +232,7 @@ EOF
 		# ReleaseDL https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest geoip.dat ${BASE_FILES}/usr/v2ray
 	;;
 	esac
-	Generate_Update_Logs() {
+Generate_Update_Logs() {
     LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
     # 获取 OpenWrt 版本
     OPENWRT_VERSION=$(grep 'OPENWRT_VERSION=' ${WORK}/version | cut -d '=' -f2)
@@ -247,10 +247,16 @@ EOF
 
     # 生成 JSON 文件
     cat > ${LOG_PATH} <<EOF
+
+{
     "OPENWRT版本": "${OPENWRT_VERSION}",
     "LUCI版本": "${LUCI_VERSION}",
     "内核版本": "${KERNEL_VERSION}",
     "更新内容": "${UPDATE_CONTENT}",
     "编译日期": "${BUILD_DATE}"
-EOF
 }
+EOF
+}  # 确保函数闭合
+
+# 在脚本最后调用函数（如果需要）
+Generate_Update_Logs
