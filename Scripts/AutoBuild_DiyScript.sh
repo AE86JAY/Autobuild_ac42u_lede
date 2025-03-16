@@ -257,6 +257,3 @@ Generate_Update_Logs() {
 }
 EOF
 }
-
-# 调用函数
-Generate_Update_Logs
