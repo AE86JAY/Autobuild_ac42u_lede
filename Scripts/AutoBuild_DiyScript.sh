@@ -247,12 +247,10 @@ EOF
 
     # 生成 JSON 文件
     cat > ${LOG_PATH} <<EOF
-{
     "OPENWRT版本": "${OPENWRT_VERSION}",
     "LUCI版本": "${LUCI_VERSION}",
     "内核版本": "${KERNEL_VERSION}",
     "更新内容": "${UPDATE_CONTENT}",
     "编译日期": "${BUILD_DATE}"
-}
 EOF
 }
