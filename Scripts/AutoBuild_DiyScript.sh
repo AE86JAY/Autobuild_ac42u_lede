@@ -238,25 +238,24 @@ Generate_Update_Logs() {
     OPENWRT_VERSION=$(grep 'OPENWRT_VERSION=' ${WORK}/version | cut -d '=' -f2)
     # 获取 LUCI 版本
     LUCI_VERSION=$(grep 'LUCI_VERSION=' ${WORK}/feeds.conf.default | grep 'luci' | cut -d '=' -f2)
-    # 获取内核版本
-    LINUX_VERSION-=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
+    # 获取内核版本（修正变量名）
+    LINUX_VERSION=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
     # 编译日期 (UTC+8)
     BUILD_DATE=$(TZ=UTC-8 date +"%Y-%m-%d")
     # 更新内容（从环境变量读取，需在 workflow 中定义）
     UPDATE_CONTENT="${UPDATE_CONTENT:-默认更新描述}"
 
-    # 生成 JSON 文件
+    # 生成 JSON 文件（修正格式）
     cat > ${LOG_PATH} <<EOF
-
 {
     "OPENWRT版本": "${OPENWRT_VERSION}",
     "LUCI版本": "${LUCI_VERSION}",
-    "内核版本": "${KERNEL_VERSION}",
+    "内核版本": "${LINUX_VERSION}",
     "更新内容": "${UPDATE_CONTENT}",
     "编译日期": "${BUILD_DATE}"
 }
 EOF
-}  # 确保函数闭合
+}
 
-# 在脚本最后调用函数（如果需要）
+# 调用函数
 Generate_Update_Logs
