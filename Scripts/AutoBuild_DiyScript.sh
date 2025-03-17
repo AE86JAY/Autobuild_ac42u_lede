@@ -36,7 +36,7 @@ Firmware_Diy_Core() {
 	Fw_MFormat=AUTO
 	# 自定义固件格式, AUTO: [自动识别]
 	
-	Regex_Skip="packages|buildinfo|sha256sums|manifest|kernel|rootfs|factory|itb|profile|ext4|json"
+	Regex_Skip="packages|buildinfo|sha256sums|manifest|rootfs|factory|itb|profile|ext4|json"
 	# 输出固件时丢弃包含该内容的固件/文件
 	
 	AutoBuild_Features=true
@@ -237,18 +237,18 @@ EOF
 
 Generate_Update_Logs() {
     LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
-    # 获取 OpenWrt 版本
-    OPENWRT_VERSION=$(grep 'OPENWRT_VERSION=' ${WORK}/version | cut -d '=' -f2)
-    # 获取 LUCI 版本
+    mkdir -p $(dirname ${LOG_PATH})
+    
+    OPENWRT_VERSION=$(grep 'OPENWRT_VERSION' ${WORK}/include/version.mk | awk -F '=' '{print $2}' | sed 's/[[:space:]]//g')
+    
     LUCI_VERSION=$(grep 'LUCI_VERSION=' ${WORK}/feeds.conf.default | grep 'luci' | cut -d '=' -f2)
-    # 获取内核版本（修正变量名）
+    
     LINUX_VERSION=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
-    # 编译日期 (UTC+8)
+    
     BUILD_DATE=$(TZ=UTC-8 date +"%Y-%m-%d")
-    # 更新内容（从环境变量读取）
+    
     UPDATE_CONTENT="${UPDATE_CONTENT:-默认更新描述}"
 
-    # 生成 JSON 文件（修正格式）
     cat > ${LOG_PATH} <<EOF
 {
     "OPENWRT版本": "${OPENWRT_VERSION}",
@@ -259,3 +259,4 @@ Generate_Update_Logs() {
 }
 EOF
 }
+Generate_Update_Logs
