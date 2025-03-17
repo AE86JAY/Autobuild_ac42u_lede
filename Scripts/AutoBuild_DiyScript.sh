@@ -237,7 +237,11 @@ EOF
 
 Generate_Update_Logs() {
     LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
-    mkdir -p $(dirname ${LOG_PATH})
+#    mkdir -p $(dirname ${LOG_PATH})
+    # 调试路径
+    echo "Checking file path: ${WORK}/${LOG_PATH}"
+        ls -l ${WORK}/${LOG_PATH} || exit 1
+        
     
     OPENWRT_VERSION=$(grep 'OPENWRT_VERSION' ${WORK}/include/version.mk | awk -F '=' '{print $2}' | sed 's/[[:space:]]//g')
     
