@@ -237,23 +237,31 @@ EOF
 
 Generate_Update_Logs() {
     LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
-#    mkdir -p $(dirname ${LOG_PATH})
-    # 调试路径
-    echo "Checking file path: ${WORK}/${LOG_PATH}"
-        ls -l ${WORK}/${LOG_PATH} || exit 1
-        
     
+    # 调试输出路径和权限
+    echo "当前用户: $(whoami)"
+    echo "目标路径: ${LOG_PATH}"
+    ls -ld "${WORK}/bin" || echo "bin目录不存在"
+    
+    # 强制创建目录并设置权限
+    mkdir -p "$(dirname "${LOG_PATH}")" || {
+        echo "创建目录失败，尝试修复权限..."
+        sudo chmod -R 755 "${WORK}/bin"  # 仅当绝对必要使用sudo
+        mkdir -p "$(dirname "${LOG_PATH}")"
+    }
+    
+    # 验证目录权限
+    ls -ld "$(dirname "${LOG_PATH}")"
+    
+    # 生成日志内容
     OPENWRT_VERSION=$(grep 'OPENWRT_VERSION' ${WORK}/include/version.mk | awk -F '=' '{print $2}' | sed 's/[[:space:]]//g')
-    
     LUCI_VERSION=$(grep 'LUCI_VERSION=' ${WORK}/feeds.conf.default | grep 'luci' | cut -d '=' -f2)
-    
     LINUX_VERSION=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
-    
-    BUILD_DATE=$(TZ=UTC-8 date +"%Y-%m-%d")
-    
+    BUILD_DATE=$(TZ=Asia/Shanghai date +"%Y-%m-%d")
     UPDATE_CONTENT="${UPDATE_CONTENT:-默认更新描述}"
-
-    cat > ${LOG_PATH} <<EOF
+    
+    # 写入日志文件
+    cat > "${LOG_PATH}" <<EOF
 {
     "OPENWRT版本": "${OPENWRT_VERSION}",
     "LUCI版本": "${LUCI_VERSION}",
@@ -262,5 +270,6 @@ Generate_Update_Logs() {
     "编译日期": "${BUILD_DATE}"
 }
 EOF
+    echo "Update_Logs.json 内容:"
+    cat "${LOG_PATH}"
 }
-Generate_Update_Logs
