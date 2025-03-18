@@ -246,7 +246,8 @@ Generate_Update_Logs() {
     # 强制创建目录并设置权限
     mkdir -p "$(dirname "${LOG_PATH}")" || {
         echo "创建目录失败，尝试修复权限..."
-        sudo chmod -R 755 "${WORK}/bin"  # 仅当绝对必要使用sudo
+    #    sudo chmod -R 755 "${WORK}/bin"  # 仅当绝对必要使用sudo
+        sudo chown -R $USER:$USER "${WORK}/bin"
         mkdir -p "$(dirname "${LOG_PATH}")"
     }
     

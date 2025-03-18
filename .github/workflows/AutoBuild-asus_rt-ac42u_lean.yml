@@ -214,11 +214,22 @@ jobs:
       run: |
         cd openwrt
         make -j4 || make -j1 V=s
-        [ "$?" == 0 ] && echo "Compile_Result=true" 
+        # 修复条件判断和变量设置
+        if [ $? -eq 0 ]; then
+          echo "Compile_Result=true" >> $GITHUB_ENV
+        else
+          echo "Compile_Result=false" >> $GITHUB_ENV
+        fi
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
         Generate_Update_Logs
-        >> $GITHUB_ENV || echo "Compile_Result=false" >> $GITHUB_ENV
 
+     - name: Debug File Check
+       if: env.Compile_Result == 'true' && !cancelled()
+       run: |
+         echo "检查固件和日志文件:"
+         ls -lh openwrt/bin/Firmware/
+         echo "Compile_Result 值为: ${{ env.Compile_Result }}"
+    
     - name: Checkout Firmware
       if: env.Compile_Result == 'true' && !cancelled()
       run: |
