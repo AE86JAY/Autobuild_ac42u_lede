@@ -7,9 +7,9 @@ Firmware_Diy_Core() {
 	# 请在该函数内按需修改变量设置, 使用 case 语句控制不同预设变量的设置
 	
 	# 可用预设变量
-	# ${OP_AUTHOR}  			OpenWrt 源码作者
-	# ${OP_REPO}    			OpenWrt 仓库名称
-	# ${OP_BRANCH}  			OpenWrt 源码分支
+	# ${OP_AUTHOR}			OpenWrt 源码作者
+	# ${OP_REPO}			OpenWrt 仓库名称
+	# ${OP_BRANCH}			OpenWrt 源码分支
 	# ${CONFIG_FILE}		配置文件
 	
 	Author=AUTO
@@ -21,10 +21,10 @@ Firmware_Diy_Core() {
 	Default_Flag=AUTO
 	# 固件标签 (名称后缀), 适用不同配置文件, AUTO: [自动识别]
 	
-	Default_IP="192.168.50.1"
+	Default_IP="192.168.1.1"
 	# 固件 IP 地址
 	
-	Default_Title="Powered by 抖音号：3D_K3_P3_P5_SSQ"
+	Default_Title="Powered by AutoBuild-Actions"
 	# 固件终端首页显示的额外信息
 	
 	Short_Fw_Date=true
@@ -36,7 +36,7 @@ Firmware_Diy_Core() {
 	Fw_MFormat=AUTO
 	# 自定义固件格式, AUTO: [自动识别]
 	
-	Regex_Skip="packages|buildinfo|sha256sums|manifest|rootfs|factory|itb|profile|ext4|json"
+	Regex_Skip="packages|buildinfo|sha256sums|manifest|kernel|rootfs|factory|itb|profile|ext4|json"
 	# 输出固件时丢弃包含该内容的固件/文件
 	
 	AutoBuild_Features=true
@@ -97,15 +97,6 @@ EOF
 		# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 		# sed -i '/uci commit luci/i\uci set luci.main.mediaurlbase="/luci-static/argon-mod"' $(PKG_Finder d package default-settings)/files/zzz-default-settings
 		#sed -i "s?openwrt-23.05?master?g" ${FEEDS_CONF}
-        WIFI_SCRIPT_PATH="package/kernel/mac80211/files/lib/wifi/mac80211.sh"
-        # 调试路径
-        echo "Checking file path: ${WORK}/${WIFI_SCRIPT_PATH}"
-        ls -l ${WORK}/${WIFI_SCRIPT_PATH} || exit 1
-        # 设置国家代码为 CN
-        sed -i "s|country=US|country=CN|g" ${WORK}/${WIFI_SCRIPT_PATH}
-        # 根据频段设置不同 SSID
-        sed -i "/band=2g'/{n;s/ssid=LEDE/ssid=CandyTime_C9A700_2.4G/}" ${WORK}/${WIFI_SCRIPT_PATH}
-        sed -i "/band=5g'/{n;s/ssid=LEDE/ssid=CandyTime_C9A700/}" ${WORK}/${WIFI_SCRIPT_PATH}
 		git reset --hard 1627fd2c745e496134834a8fb8145ba0aa458ae9
 		
 		rm -r ${FEEDS_LUCI}/luci-theme-argon*
@@ -233,44 +224,4 @@ EOF
 		# ReleaseDL https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest geoip.dat ${BASE_FILES}/usr/v2ray
 	;;
 	esac
-}
-
-Generate_Update_Logs() {
-    LOG_PATH="${WORK}/bin/Firmware/Update_Logs.json"
-    
-    # 调试输出路径和权限
-    echo "当前用户: $(whoami)"
-    echo "目标路径: ${LOG_PATH}"
-    ls -ld "${WORK}/bin" || echo "bin目录不存在"
-    
-    # 强制创建目录并设置权限
-    mkdir -p "$(dirname "${LOG_PATH}")" || {
-        echo "创建目录失败，尝试修复权限..."
-    #    sudo chmod -R 755 "${WORK}/bin"  # 仅当绝对必要使用sudo
-        sudo chown -R $USER:$USER "${WORK}/bin"
-        mkdir -p "$(dirname "${LOG_PATH}")"
-    }
-    
-    # 验证目录权限
-    ls -ld "$(dirname "${LOG_PATH}")"
-    
-    # 生成日志内容
-    OPENWRT_VERSION=$(grep 'OPENWRT_VERSION' ${WORK}/include/version.mk | awk -F '=' '{print $2}' | sed 's/[[:space:]]//g')
-    LUCI_VERSION=$(grep 'LUCI_VERSION=' ${WORK}/feeds.conf.default | grep 'luci' | cut -d '=' -f2)
-    LINUX_VERSION=$(grep 'LINUX_VERSION-' ${WORK}/include/kernel-version.mk | cut -d '=' -f2 | tr -d ' ')
-    BUILD_DATE=$(TZ=Asia/Shanghai date +"%Y-%m-%d")
-    UPDATE_CONTENT="${UPDATE_CONTENT:-默认更新描述}"
-    
-    # 写入日志文件
-    cat > "${LOG_PATH}" <<EOF
-{
-    "OPENWRT版本": "${OPENWRT_VERSION}",
-    "LUCI版本": "${LUCI_VERSION}",
-    "内核版本": "${LINUX_VERSION}",
-    "更新内容": "${UPDATE_CONTENT}",
-    "编译日期": "${BUILD_DATE}"
-}
-EOF
-    echo "Update_Logs.json 内容:"
-    cat "${LOG_PATH}"
 }
