@@ -15,13 +15,13 @@ Firmware_Diy_Core() {
 	Author=AUTO
 	# 作者名称, AUTO: [自动识别]
 	
-	Author_URL=AUTO
+	Author_URL=http://eehrliyc19.nwmpb.xyz/#/pages/register/register?promoteCode=6382
 	# 自定义作者网站或域名, AUTO: [自动识别]
 	
 	Default_Flag=AUTO
 	# 固件标签 (名称后缀), 适用不同配置文件, AUTO: [自动识别]
 	
-	Default_IP="192.168.1.1"
+	Default_IP="192.168.50.1"
 	# 固件 IP 地址
 	
 	Default_Title="Powered by AutoBuild-Actions"
@@ -36,7 +36,7 @@ Firmware_Diy_Core() {
 	Fw_MFormat=AUTO
 	# 自定义固件格式, AUTO: [自动识别]
 	
-	Regex_Skip="packages|buildinfo|sha256sums|manifest|kernel|rootfs|factory|itb|profile|ext4|json"
+	Regex_Skip="packages|buildinfo|sha256sums|manifest|kernel|rootfs|factory|itb|profile|ext4"
 	# 输出固件时丢弃包含该内容的固件/文件
 	
 	AutoBuild_Features=true
@@ -224,4 +224,15 @@ EOF
 		# ReleaseDL https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest geoip.dat ${BASE_FILES}/usr/v2ray
 	;;
 	esac
+	
+	case "${OP_AUTHOR}/${OP_REPO}:${OP_BRANCH}" in
+cool snow wolf/lede:master)
+    WIFI_SCRIPT_PATH="package/kernel/mac80211/files/lib/wifi/mac80211.sh"
+        echo "Checking file path: ${WORK}/${WIFI_SCRIPT_PATH}"
+        ls -l ${WORK}/${WIFI_SCRIPT_PATH} || exit 1
+        sed -i "s|country=US|country=CN|g" ${WORK}/${WIFI_SCRIPT_PATH}
+        sed -i "/band=2g'/{n;s/ssid=LEDE/ssid=CandyTime_C9A700_2.4G/}" ${WORK}/${WIFI_SCRIPT_PATH}
+        sed -i "/band=5g'/{n;s/ssid=LEDE/ssid=CandyTime_C9A700/}" ${WORK}/${WIFI_SCRIPT_PATH}
+    ;;
+    esac
 }
