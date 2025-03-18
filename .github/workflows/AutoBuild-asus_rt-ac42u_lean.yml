@@ -63,7 +63,7 @@ env:
 ### 请按需求修改以上内容
 
 jobs:
-  Compile
+  Compile:
     runs-on: ubuntu-24.04
     permissions:
       issues: write
@@ -214,7 +214,7 @@ jobs:
       run: |
         cd openwrt
         make -j4 || make -j1 V=s
-       # 修复条件判断和变量设置
+        # 修复条件判断和变量设置
         if [ $? -eq 0 ];
         then
             echo "Compile_Result=true" >> $GITHUB_ENV
