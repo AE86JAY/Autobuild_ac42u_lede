@@ -75,7 +75,7 @@ Firmware_Diy() {
 	# merge_package <git_branch> <git_repo_url> <package_path> <target_path>..
 	
 	case "${OP_AUTHOR}/${OP_REPO}:${OP_BRANCH}" in
-	coolsnowwolf/lede:master)
+    coolsnowwolf/lede:master)
 		cat >> ${Version_File} <<EOF
 sed -i '/check_signature/d' /etc/opkg.conf
 if [ -z "\$(grep "REDIRECT --to-ports 53" /etc/firewall.user 2> /dev/null)" ]
@@ -226,7 +226,7 @@ EOF
 	esac
 	
 	case "${OP_AUTHOR}/${OP_REPO}:${OP_BRANCH}" in
-cool snow wolf/lede:master)
+    coolsnowwolf/lede:master)
     WIFI_SCRIPT_PATH="package/kernel/mac80211/files/lib/wifi/mac80211.sh"
         echo "Checking file path: ${WORK}/${WIFI_SCRIPT_PATH}"
         ls -l ${WORK}/${WIFI_SCRIPT_PATH} || exit 1
