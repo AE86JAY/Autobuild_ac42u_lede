@@ -63,7 +63,7 @@ env:
 ### 请按需求修改以上内容
 
 jobs:
-  Compile:
+  Compile
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -216,9 +216,9 @@ jobs:
         make -j4 || make -j1 V=s
         # 修复条件判断和变量设置
         if [ $? -eq 0 ]; then
-          echo "Compile_Result=true" >> $GITHUB_ENV
+            echo "Compile_Result=true" >> $GITHUB_ENV
         else
-          echo "Compile_Result=false" >> $GITHUB_ENV
+           echo "Compile_Result=false" >> $GITHUB_ENV
         fi
         source $GITHUB_WORKSPACE/Scripts/AutoBuild_DiyScript.sh
         Generate_Update_Logs
