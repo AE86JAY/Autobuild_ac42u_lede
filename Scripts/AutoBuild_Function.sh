@@ -379,7 +379,7 @@ Firmware_Diy_End() {
         }' > ${Fw_Path}/Update_Logs.json
     mv -f ${Fw_Path}/Update_Logs.json ${WORK}/bin/Firmware/
     ECHO "Update_Logs.json generated successfully."
-｝
+}
 
 Process_Fw() {
 	while [[ $1 ]];do
