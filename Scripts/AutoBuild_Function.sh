@@ -375,7 +375,7 @@ Firmware_Diy_End() {
             "OpenWrt版本": $ow_ver,
             "Luci版本": $luci_ver,
             "内核版本": $kernel_ver,
-            "提交信息": $commit_msg,
+            "更新信息": $commit_msg,
             "编译日期": $build_date
         }' > ${Fw_Path}/Update_Logs.json
 
