@@ -358,29 +358,6 @@ Firmware_Diy_End() {
 		mv -f ${Fw_Path}/AutoBuild-* bin/Firmware
 	fi
 	ECHO "[Firmware_Diy_End] Done"
-    ECHO "Generating Update_Logs.json ..."
-    OPENWRT_VERSION=$(grep 'DISTRIB_RELEASE=' ${Version_File} | awk -F "='" '{print $2}' | cut -d "'" -f1)
-    LUCI_VERSION=$(git -C ${FEEDS_LUCI} log -1 --format="%h (%ad)" --date=short)
-    KERNEL_VERSION=$(grep '^LINUX_VERSION=' ${CONFIG_TEMP} | cut -d '=' -f2 | tr -d '"')
-    COMMIT_MESSAGE=$(git -C ${WORK} log -1 --pretty="%s [%h]")
-    BUILD_DATE=$(TZ='Asia/Shanghai' date -d "@${Compile_Date}" +"%Y-%m-%d %H:%M:%S")
-
-    jq -n \
-        --arg ow_ver "$OPENWRT_VERSION" \
-        --arg luci_ver "$LUCI_VERSION" \
-        --arg kernel_ver "$KERNEL_VERSION" \
-        --arg commit_msg "$COMMIT_MESSAGE" \
-        --arg build_date "$BUILD_DATE" \
-        '{
-            "OpenWrt版本": $ow_ver,
-            "Luci版本": $luci_ver,
-            "内核版本": $kernel_ver,
-            "更新信息": $commit_msg,
-            "编译日期": $build_date
-        }' > ${Fw_Path}/Update_Logs.json
-
-    mv -f ${Fw_Path}/Update_Logs.json ${WORK}/bin/Firmware/
-    ECHO "Update_Logs.json 生成成功。"
 }
 
 Process_Fw() {
